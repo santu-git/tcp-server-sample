@@ -1,0 +1,80 @@
+doctype html
+html
+  head
+    title= title
+    meta(name='viewport' content='width=device-width, initial-scale=1.0')
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    script(src='https://code.jquery.com/jquery-3.7.1.min.js' integrity='sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=' crossorigin='anonymous')
+    script(src="/socket.io/socket.io.js")
+    style. 
+      table, th, td {
+        border: 1px solid #abacaf;
+        border-collapse: collapse;
+      }
+      .table-container {
+        display: flex;
+        justify-content: space-between;
+      }
+        table {
+        border-collapse: collapse;
+        margin: 10px;
+        width: 45%; /* Adjust the width as needed */
+      }
+      th, td {
+        border: 1px solid #abacaf;
+        padding: 8px;
+        text-align: left;
+      }
+      .heading{
+        background-color: #121c3c;
+        color: white;
+      }
+  body
+    block content
+    script.
+      const socket = io();
+      const parser = new DOMParser();
+      socket.on("barcode", function (data) {
+        addNewRow(data, 'socket-data-table');
+      });
+
+      function addNewRow(data, tablename){
+        var rowCount = $(`tbody#${tablename} tr`).length;
+        if(rowCount==20){
+          $(`tbody#${tablename}`).empty();
+        }
+        let newRow = `<tr id=${data.timestamp}><td>${data.camera}</td><td>${data.hu}</td><td>${new Date(data.timestamp).toLocaleString()}</td></tr>`;
+        $(`#${tablename}`).prepend(newRow);
+      }
+
+
+      function listenToWebSocket(url) {
+        // Create a new WebSocket instance
+        const socket = new WebSocket(url);
+
+        // When the connection is opened
+        socket.onopen = function() {
+            console.log("WebSocket connection opened.");
+        };
+
+        // Listen for messages from the server
+        socket.onmessage = function(event) {
+          console.log(event.data)
+            let data = JSON.parse(event.data);
+            addNewRow(data, 'ws-data-table');
+        };
+
+        // Handle any errors that occur
+        socket.onerror = function(error) {
+            console.error("WebSocket error:", error);
+        };
+
+        // When the connection is closed
+        socket.onclose = function() {
+            console.log("WebSocket connection closed.");
+        };
+      }
+
+      // Example usage
+      listenToWebSocket('ws://localhost:9010/socket'); 
+

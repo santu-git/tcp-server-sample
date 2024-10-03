@@ -1,0 +1,22 @@
+extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}
+  .table-container
+    table
+      tr
+        th.heading(colspan=3) SOCKET IO 
+      tr.heading
+        th Camera 
+        th HU
+        th Time
+      tbody#socket-data-table
+    table
+      tr.heading
+        th(colspan=3) WEB SOCKET 
+      tr.heading
+        th Camera 
+        th HU
+        th Time
+      tbody#ws-data-table
